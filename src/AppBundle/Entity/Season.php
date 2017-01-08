@@ -29,7 +29,7 @@ class Season
     private $number;
 
     /**
-     * @ORM\OneToMany(targetEntity="Episode", mappedBy="season")
+     * @ORM\OneToMany(targetEntity="Episode", mappedBy="season", cascade="remove")
      * @ORM\OrderBy({"number" = "ASC"})
      */
     private $episodes;

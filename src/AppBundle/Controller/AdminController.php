@@ -74,6 +74,23 @@ class AdminController extends Controller
     }
 
     /**
+     * @Route("/deleteSeason/{id}", name="admin_delete_season")
+     */
+    public function deleteSeasonAction($id)
+    {
+        $em = $this->get('doctrine')->getManager();
+        $repo = $em->getRepository('AppBundle:Season');
+        if ($season = $repo->find($id)) {
+            $id = $season->getShow()->getId();
+            $em->remove($season);
+            $em->flush();
+            return $this->redirect($this->generateUrl('show', ['id' => $id]));
+        } else {
+            return $this->redirect($this->generateUrl('homepage'));
+        }
+    }
+
+    /**
      * @Route("/deleteEpisode/{id}", name="admin_delete_episode")
      */
     public function deleteEpisodeAction($id)
