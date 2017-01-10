@@ -4,6 +4,7 @@ namespace AppBundle\Controller;
 
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
 
@@ -62,5 +63,24 @@ class DefaultController extends Controller
     public function loginAction()
     {
         return [];
+    }
+
+    /**
+     * @Route("/search", name="search")
+     * @Method("POST")
+     * @Template()
+     */
+    public function searchAction(Request $request)
+    {
+
+        $repositorymanager = $this->container->get('fos_elastica.manager.orm');
+
+        $repository = $repositorymanager->getRepository('AppBundle:TVShow');
+
+        $results = $repository->find($request->get('search'));
+
+        return [
+            'results' => $results
+        ];
     }
 }
