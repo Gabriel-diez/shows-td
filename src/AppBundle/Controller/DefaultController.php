@@ -23,13 +23,23 @@ class DefaultController extends Controller
      * @Route("/shows", name="shows")
      * @Template()
      */
-    public function showsAction()
+    public function showsAction(Request $request)
     {
         $em = $this->get('doctrine')->getManager();
         $repo = $em->getRepository('AppBundle:TVShow');
 
+        $query = $repo->findAll();
+
+        $paginator  = $this->get('knp_paginator');
+        $pagination = $paginator->paginate(
+            $query,
+            $request->query->get('page', 1),
+            6
+        );
+
         return [
-            'shows' => $repo->findAll()
+            'shows' => $repo->findAll(),
+            'pagination' => $pagination
         ];
     }
 
