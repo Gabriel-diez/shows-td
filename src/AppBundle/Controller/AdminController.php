@@ -167,4 +167,58 @@ class AdminController extends Controller
             'result' => $result
         ];
     }
+
+    /**
+     * @Route("/import/{id}", name="import_omdb")
+     * @Template()
+     */
+    public function importAction($id)
+    {
+        $omdb = new OMDbAPI();
+        $result = $omdb->fetch('i', $id);
+        $result = $result->data;
+
+
+        if ($result->Type === 'series') {
+
+            $show = new TVShow();
+            $show->setName($result->Title)
+                 ->setSynopsis($result->Plot);
+            // Handling file upload
+            $webRoot = $this->get('kernel')->getRootDir().'/../web';
+            $file = $result->Poster;
+            $ext = pathinfo($file)['extension'];
+            $filename = $id .'.'. $ext;
+            copy($file, $webRoot . '/uploads/' . $filename);
+
+            $show->setImage($filename);
+
+            for ($i = 1; $i <= $result->totalSeasons; $i++) {
+                $seasonData = $omdb->fetch('i', $id, ['Season' => $i]);
+                $seasonData = $seasonData->data;
+
+                $season = new Season;
+                $season
+                    ->setShow($show)
+                    ->setNumber($i)
+                ;
+
+                foreach ($seasonData->Episodes as $episodeData) {
+                    $episode = new Episode;
+                    $episode
+                        ->setSeason($season)
+                        ->setNumber($episodeData->Episode)
+                        ->setName($episodeData->Title)
+                        ->setDate($episodeData->Released)
+                    ;
+                }
+            }
+
+            var_dump($episode);
+            die();
+        }
+
+
+        return [];
+    }
 }
