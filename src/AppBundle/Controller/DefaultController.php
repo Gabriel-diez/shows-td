@@ -63,7 +63,12 @@ class DefaultController extends Controller
      */
     public function calendarAction()
     {
-        return [];
+        $em = $this->get('doctrine')->getManager();
+        $repo = $em->getRepository('AppBundle:Episode');
+
+        return [
+            'episodes' => $repo->findEpisodeInComing()
+        ];
     }
 
     /**

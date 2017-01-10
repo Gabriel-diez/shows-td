@@ -10,4 +10,16 @@ namespace AppBundle\Repository;
  */
 class EpisodeRepository extends \Doctrine\ORM\EntityRepository
 {
+    public function findEpisodeInComing() {
+        $em = $this->getEntityManager();
+
+        $query = $em->createQuery(
+            'SELECT e
+             FROM AppBundle:Episode e
+             WHERE e.date >= CURRENT_DATE()
+             ORDER BY e.date ASC'
+        );
+
+        return $query->getResult();
+    }
 }
