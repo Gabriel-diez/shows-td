@@ -170,13 +170,13 @@ class AdminController extends Controller
 
     /**
      * @Route("/import/{id}", name="import_omdb")
-     * @Template()
      */
     public function importAction($id)
     {
         $omdb = new OMDbAPI();
         $result = $omdb->fetch('i', $id);
         $result = $result->data;
+        $em = $this->get('doctrine')->getManager();
 
 
         if ($result->Type === 'series') {
@@ -193,6 +193,9 @@ class AdminController extends Controller
 
             $show->setImage($filename);
 
+            $em->persist($show);
+
+            // Fetch each Season
             for ($i = 1; $i <= $result->totalSeasons; $i++) {
                 $seasonData = $omdb->fetch('i', $id, ['Season' => $i]);
                 $seasonData = $seasonData->data;
@@ -203,22 +206,43 @@ class AdminController extends Controller
                     ->setNumber($i)
                 ;
 
+                $em->persist($season);
+
+                // Fetch each Episode of Season
                 foreach ($seasonData->Episodes as $episodeData) {
+
+                    // Check date validity
+                    if(strtotime($episodeData->Released)) {
+                        $date = new \DateTime($episodeData->Released);
+                    } else {
+                        $date = null;
+                    }
+
                     $episode = new Episode;
                     $episode
                         ->setSeason($season)
                         ->setNumber($episodeData->Episode)
                         ->setName($episodeData->Title)
-                        ->setDate($episodeData->Released)
+                        ->setDate($date)
                     ;
+
+                    $em->persist($episode);
                 }
             }
 
-            var_dump($episode);
-            die();
+            $em->flush();
+
+            $this->addFlash(
+                'notice',
+                'Série bien ajoutée !'
+            );
+        } else {
+            $this->addFlash(
+                'error',
+                'Les données importées doivent concerner une serie !'
+            );
         }
 
-
-        return [];
+        return $this->redirect($this->generateUrl('admin_omdb'));
     }
 }
