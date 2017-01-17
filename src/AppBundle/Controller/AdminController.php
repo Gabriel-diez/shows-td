@@ -167,4 +167,82 @@ class AdminController extends Controller
             'result' => $result
         ];
     }
+
+    /**
+     * @Route("/import/{id}", name="import_omdb")
+     */
+    public function importAction($id)
+    {
+        $omdb = new OMDbAPI();
+        $result = $omdb->fetch('i', $id);
+        $result = $result->data;
+        $em = $this->get('doctrine')->getManager();
+
+
+        if ($result->Type === 'series') {
+
+            $show = new TVShow();
+            $show->setName($result->Title)
+                 ->setSynopsis($result->Plot);
+            // Handling file upload
+            $webRoot = $this->get('kernel')->getRootDir().'/../web';
+            $file = $result->Poster;
+            $ext = pathinfo($file)['extension'];
+            $filename = $id .'.'. $ext;
+            copy($file, $webRoot . '/uploads/' . $filename);
+
+            $show->setImage($filename);
+
+            $em->persist($show);
+
+            // Fetch each Season
+            for ($i = 1; $i <= $result->totalSeasons; $i++) {
+                $seasonData = $omdb->fetch('i', $id, ['Season' => $i]);
+                $seasonData = $seasonData->data;
+
+                $season = new Season;
+                $season
+                    ->setShow($show)
+                    ->setNumber($i)
+                ;
+
+                $em->persist($season);
+
+                // Fetch each Episode of Season
+                foreach ($seasonData->Episodes as $episodeData) {
+
+                    // Check date validity
+                    if(strtotime($episodeData->Released)) {
+                        $date = new \DateTime($episodeData->Released);
+                    } else {
+                        $date = null;
+                    }
+
+                    $episode = new Episode;
+                    $episode
+                        ->setSeason($season)
+                        ->setNumber($episodeData->Episode)
+                        ->setName($episodeData->Title)
+                        ->setDate($date)
+                    ;
+
+                    $em->persist($episode);
+                }
+            }
+
+            $em->flush();
+
+            $this->addFlash(
+                'notice',
+                'Série bien ajoutée !'
+            );
+        } else {
+            $this->addFlash(
+                'error',
+                'Les données importées doivent concerner une serie !'
+            );
+        }
+
+        return $this->redirect($this->generateUrl('admin_omdb'));
+    }
 }
