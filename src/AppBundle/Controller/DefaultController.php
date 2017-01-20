@@ -90,12 +90,10 @@ class DefaultController extends Controller
 
         $em = $this->get('doctrine')->getManager();
 
-        $repository = $em->getRepository('AppBundle:TVShow');
-
-        $results = $repository->find($request->get('search'));
+        $repo = $em->getRepository('AppBundle:TVShow');
 
         return [
-            'results' => $results
+            'results' => $repo->findTVShows($request->get('search'))
         ];
     }
 }

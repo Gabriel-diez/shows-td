@@ -10,6 +10,10 @@ namespace AppBundle\Repository;
  */
 class EpisodeRepository extends \Doctrine\ORM\EntityRepository
 {
+    /**
+     * Find Episode who will be released in future
+     * @return array
+     */
     public function findEpisodeInComing() {
         $em = $this->getEntityManager();
 
