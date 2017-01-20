@@ -77,24 +77,6 @@ assetic:
         uglifycss:
                     bin: /usr/local/bin/uglifycss
 
-fos_elastica:
-    clients:
-        default: { host: localhost, port: 9200 }
-    indexes:
-        app:
-            client: default
-            types:
-                TVShow:
-                    mappings:
-                        synopsis: ~
-                        name: ~
-                    persistence:
-                        driver: orm # orm, mongodb, propel are available
-                        model:  AppBundle\Entity\TVShow
-                        provider: ~
-                        listener: ~
-                        finder: ~
-
 knp_paginator:
     page_range: 5                      # default page range used in pagination control
     default_options:
