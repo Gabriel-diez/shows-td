@@ -18,7 +18,6 @@ class AppKernel extends Kernel
             new AppBundle\AppBundle(),
             new Gregwar\ImageBundle\GregwarImageBundle(),
             new Symfony\Bundle\AsseticBundle\AsseticBundle(),
-            new FOS\ElasticaBundle\FOSElasticaBundle(),
             new Knp\Bundle\PaginatorBundle\KnpPaginatorBundle(),
         ];
 

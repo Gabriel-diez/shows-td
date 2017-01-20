@@ -88,14 +88,12 @@ class DefaultController extends Controller
     public function searchAction(Request $request)
     {
 
-        $repositorymanager = $this->container->get('fos_elastica.manager.orm');
+        $em = $this->get('doctrine')->getManager();
 
-        $repository = $repositorymanager->getRepository('AppBundle:TVShow');
-
-        $results = $repository->find($request->get('search'));
+        $repo = $em->getRepository('AppBundle:TVShow');
 
         return [
-            'results' => $results
+            'results' => $repo->findTVShows($request->get('search'))
         ];
     }
 }

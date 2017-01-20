@@ -10,4 +10,22 @@ namespace AppBundle\Repository;
  */
 class TVShowRepository extends \Doctrine\ORM\EntityRepository
 {
+    /**
+     * Find TVShow with search data
+     * @param $search
+     * @return array
+     */
+    public function findTVShows($search) {
+        $em = $this->getEntityManager();
+
+        $query = $em->createQuery(
+            'SELECT t
+             FROM AppBundle:TVShow t
+             WHERE t.synopsis LIKE :search
+             OR t.name LIKE :search
+             '
+        )->setParameter('search', "%$search%");
+
+        return $query->getResult();
+    }
 }

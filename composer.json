@@ -26,7 +26,6 @@
         "aharen/omdbapi": "dev-master",
         "twig/extensions": "^1.4",
         "symfony/assetic-bundle": "^2.8",
-        "friendsofsymfony/elastica-bundle": "^3.2",
         "knplabs/knp-paginator-bundle": "^2.5"
     },
     "require-dev": {
