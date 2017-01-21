@@ -178,7 +178,6 @@ class AdminController extends Controller
         $result = $result->data;
         $em = $this->get('doctrine')->getManager();
 
-
         if ($result->Type === 'series') {
 
             $show = new TVShow();
@@ -232,16 +231,13 @@ class AdminController extends Controller
 
             $em->flush();
 
-            $this->addFlash(
-                'notice',
-                'Série bien ajoutée !'
-            );
-        } else {
-            $this->addFlash(
-                'error',
-                'Les données importées doivent concerner une serie !'
-            );
+            return $this->redirect($this->generateUrl('show', ['id' => $show->getId()]));
         }
+
+        $this->addFlash(
+            'error',
+            'Les données importées doivent concerner une serie !'
+        );
 
         return $this->redirect($this->generateUrl('admin_omdb'));
     }
