@@ -183,14 +183,16 @@ class AdminController extends Controller
             $show = new TVShow();
             $show->setName($result->Title)
                  ->setSynopsis($result->Plot);
-            // Handling file upload
-            $webRoot = $this->get('kernel')->getRootDir().'/../web';
-            $file = $result->Poster;
-            $ext = pathinfo($file)['extension'];
-            $filename = $id .'.'. $ext;
-            copy($file, $webRoot . '/uploads/' . $filename);
 
-            $show->setImage($filename);
+            // Handling file upload
+            $file = $result->Poster;
+            if ($file) {
+                $webRoot = $this->get('kernel')->getRootDir().'/../web';
+                $ext = pathinfo($file)['extension'];
+                $filename = $id .'.'. $ext;
+                copy($file, $webRoot . '/uploads/' . $filename);
+                $show->setImage($filename);
+            }
 
             $em->persist($show);
 
